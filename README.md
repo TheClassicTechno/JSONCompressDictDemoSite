@@ -14,3 +14,5 @@ instructions to run
 
 ## download chrome canary, visit localhost:5000, open DevTools->Network to observe sizes of base.json and delta.json being downloaded efficiently
 
+should be ueeing base.json as 410 KB and delta.json as <10KB
+
