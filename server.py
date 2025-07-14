@@ -1,12 +1,10 @@
-from flask import Flask, request, jsonify, send_from_directory, render_template, Response
+from flask import Flask, send_from_directory, Response
 
 app = Flask(__name__)
-
 
 @app.route('/')
 def index():
     return send_from_directory('.', 'index.html')
-
 
 @app.route("/base.json")
 def base_json():
@@ -17,9 +15,9 @@ def delta_json():
     with open('delta.json.br', 'rb') as f:
         compressed_data = f.read()
     headers = {
-            "Content-Encoding": "br",
-            'Content-Type': 'application/json',
-            'Use-As-Dictionary': 'base.json'
+        "Content-Encoding": "br",
+        'Content-Type': 'application/json',
+        'Use-As-Dictionary': 'base.json'
     }
     return Response(compressed_data, headers=headers)
 

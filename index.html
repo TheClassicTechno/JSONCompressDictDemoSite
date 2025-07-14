@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Compress Dict Demo JSON Website</title>
-
 </head>
 <body>
     <header>
@@ -12,23 +11,21 @@
     </header>
     <main>
         <section>
-            <h2>About Me</h2>
-            <p>This is a brief introduction about myself. I enjoy coding and creating web applications.</       p>
+            <h2>Compression Demo</h2>
+            <p>Open Chrome Canary DevTools → Network tab. Reload this page to see <b>base.json</b> and <b>delta.json</b> file sizes. <br>
+            <b>delta.json</b> is compressed with Brotli using <b>base.json</b> as dictionary.</p>
         </section>
-        <section>
-           
-           
-                <p><a href="/base.json" download>Download Base JOSN </a>></p>
-                <p><a href="/compressed.json" download>Download Compressed JSON w Brotli and Dictionary</a></p>
-                <p>These files demonstrate the use of compression techniques in JSON data.</p>
-        
-                
-                <p>open network tab or inspect file sizes after download</li>
-             
-        </section>
-        <section>       
-            
-            </section>
-            </main>
-            </body>
-            </html>
+    </main>
+    <script>
+       
+    // Fetch both files so they show up in the Network tab
+    fetch('/base.json').then(() => {
+        console.log('Base JSON requested');
+    });
+    fetch('/delta.json').then(() => {
+        console.log('Delta JSON requested');
+    });
+
+    </script>
+</body>
+</html>
