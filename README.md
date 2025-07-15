@@ -16,3 +16,10 @@ instructions to run
 
 should be ueeing base.json as 410 KB and delta.json as <10KB
 
+
+****git clone https://github.com/google/brotli
+cd brotli
+mkdir out && cd out
+cmake ..
+make -j4
+****
