@@ -35,3 +35,9 @@ g++ compress_with_dict.cpp -lbrotlienc -o compress_dict
 ./compress_dict
 This will generate a delta.json.br compressed using base.json as dictionary.
 
+
+g++ compress_dict.cpp \
+  -I./brotli/c/include \
+  -L./brotli/out \
+  -lbrotlienc -o compress_dict
+
