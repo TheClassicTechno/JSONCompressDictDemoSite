@@ -1,43 +1,68 @@
 # JSONCompressDictDemoSite
+This project demonstrates Brotli compression using a shared dictionary (base.json) to significantly reduce the size of a delta file (delta.json). The site runs locally and allows you to observe efficient compression via DevTools.
 
-instructions to run
+# How to Run the Demo
+1. Install dependencies
 
-## pip install -r requirements.txt
+pip install -r requirements.txt
+2. Start the server
 
-## python server.py
+python server.py
 
-## http://localhost:5000
+# Testing Compression Efficiency
+Step-by-step:
+Download Chrome Canary (to test custom Brotli dictionary support).
 
-## you will see a link to download base.json and delta.json (compressed with brotli using base as dictionary)
+Visit http://localhost:5000.
 
-# testing compression dictionary transport
+Open DevTools → Network tab.
 
-## download chrome canary, visit localhost:5000, open DevTools->Network to observe sizes of base.json and delta.json being downloaded efficiently
+Refresh the page and inspect:
 
-should be ueeing base.json as 410 KB and delta.json as <10KB
+base.json should be ~410 KB
 
+delta.json.br should be < 10 KB
+
+This showcases dictionary-based compression in action.
+
+# Brotli Dictionary Compilation
+To build the Brotli encoder and use it with a dictionary:
+
+Clone and build Brotli:
 git clone https://github.com/google/brotli
 cd brotli
 mkdir out && cd out
 cmake ..
 make -j4
-
-
-# Compile the script
+# Compile the Dictionary Compression Script
 Assuming Brotli headers and libs are available after build:
 
-g++ compress_with_dict.cpp -I../include -L../out -lbrotlienc -o compress_dict
-Or if you installed Brotli system-wide:
+g++ compress_with_dict.cpp \
+    -I../include \
+    -L../out \
+    -lbrotlienc \
+    -o compress_dict
+If you installed Brotli system-wide:
 
-g++ compress_with_dict.cpp -lbrotlienc -o compress_dict
-# Run it
-
-./compress_dict
-This will generate a delta.json.br compressed using base.json as dictionary.
-
+g++ compress_with_dict.cpp \
+    -lbrotlienc \
+    -o compress_dict
+Or specify all include paths manually:
 
 g++ compress_dict.cpp \
-  -I./brotli/c/include \
-  -L./brotli/out \
-  -lbrotlienc -o compress_dict
+    -I./brotli/c/include \
+    -L./brotli/out \
+    -lbrotlienc \
+    -o compress_dict
+# Run the Compressor
+./compress_dict
+This generates delta.json.br, compressed using base.json as the dictionary.
+
+# Summary
+
+Demonstrates dictionary-based Brotli compression
+
+Provides a visual web interface
+
+Uses minimal Python and C++ code for integration
 
