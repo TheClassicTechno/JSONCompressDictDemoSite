@@ -1,6 +1,6 @@
 import json
-import brotli
-
+#import brotli
+import brotlicffi
 # Step 1: Read base.json
 with open('base.json', 'r', encoding='utf-8') as f:
     data = json.load(f)
@@ -22,12 +22,27 @@ modified_data = replace_commontext(data)
 with open('delta.json', 'w', encoding='utf-8') as f:
     json.dump(modified_data, f, ensure_ascii=False, indent=2)
 
-# Step 4: Compress delta.json to delta.json.br
+
+# Step 4: Compress delta.json to delta.json.br using base.json as dictionary
 with open('delta.json', 'rb') as f_in:
-    content = f_in.read()
-    compressed = brotli.compress(content)
+    delta_content = f_in.read()
+
+with open('base.json', 'rb') as f_dict:
+    dict_content = f_dict.read()
+
+compressor = brotlicffi.BrotliCompressor(dictionary=dict_content)
+compressed = compressor.process(delta_content) + compressor.finish()
 
 with open('delta.json.br', 'wb') as f_out:
     f_out.write(compressed)
 
-print("delta.json and delta.json.br generated successfully.")
+print("delta.json and delta.json.br generated successfully with dictionary compression.")
+# # Step 4: Compress delta.json to delta.json.br
+# with open('delta.json', 'rb') as f_in:
+#     content = f_in.read()
+#     compressed = brotli.compress(content)
+
+# with open('delta.json.br', 'wb') as f_out:
+#     f_out.write(compressed)
+
+# print("delta.json and delta.json.br generated successfully.")
