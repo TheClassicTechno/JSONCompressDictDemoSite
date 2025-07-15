@@ -22,10 +22,19 @@
     fetch('/base.json').then(() => {
         console.log('Base JSON requested');
     });
-    fetch('/delta.json').then(() => {
-        console.log('Delta JSON requested');
-    });
-
+    fetch('/delta.json')
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.text();
+  })
+  .then(data => {
+    console.log('Delta JSON loaded:', data);
+  })
+  .catch(error => {
+    console.error('Failed to load delta.json:', error);
+  });
     </script>
 </body>
 </html>
