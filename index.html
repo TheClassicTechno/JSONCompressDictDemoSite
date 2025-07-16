@@ -1,6 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Compress Dict Demo JSON Website</title>
+</head>
+<body>
+    <header>
+        <h1>Welcome to Compress Dict Demo JSON Website!</h1>
+    </header>
+    <main>
+        <section>
+            <h2>Compression Demo</h2>
+            <p>
+                Open Chrome Canary DevTools → Network tab. Reload this page to see <b>base.json</b> and <b>delta.json</b> file sizes.<br />
+                <b>delta.json</b> is compressed with <b>zstd</b> using <b>base.json</b> as dictionary.
+            </p>
+        </section>
+    </main>
+
+    <script>
+        // Fetch base.json normally
+        fetch('/base.json')
+            .then(() => {
+                console.log('Base JSON requested');
+            })
+            .catch(console.error);
+
+        // Fetch delta.json.zst (zstd compressed)
+        fetch('/delta.json.zst')
+            .then(res => res.arrayBuffer())
+            .then(buffer => {
+                console.log('Raw delta.json.zst data loaded:', buffer);
+                // You can decode it client-side if you want using a zstd JS library
+            })
+            .catch(err => {
+                console.error('Failed to load delta.json.zst:', err);
+            });
+
+        // Fetch delta.json (served as zstd compressed with headers)
+        fetch('/delta.json')
+            .then(res => res.arrayBuffer())
+            .then(buffer => {
+                console.log('Raw delta.json data loaded:', buffer);
+                // Optionally decode with zstd JS library client-side
+            })
+            .catch(err => {
+                console.error('Failed to load delta.json:', err);
+            });
+    </script>
+</body>
+</html>
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Compress Dict Demo JSON Website</title>
@@ -22,6 +76,15 @@
     fetch('/base.json').then(() => {
         console.log('Base JSON requested');
     });
+    fetch('delta.json.br')
+  .then(res => res.json())
+  .then(data => {
+    console.log('Loaded delta:', data);
+  })
+  .catch(err => {
+    console.error('Failed to load delta.json:', err);
+  });
+
     fetch('/delta.json')
   .then(response => {
     if (!response.ok) {
@@ -37,4 +100,4 @@
   });
     </script>
 </body>
-</html>
+</html> -->
