@@ -7,7 +7,8 @@ app = Flask(__name__)
 
 def cache_response(resp, max_age=3600):
     """Add cache headers to a response object."""
-    resp.headers['Cache-Control'] = f'public, max-age={max_age}'
+    #resp.headers['Cache-Control'] = f'public, max-age={max_age}'
+    resp.headers['Cache-Control'] = 'public, max-age={}'.format(max_age)
     expire_time = datetime.utcnow() + timedelta(seconds=max_age)
     resp.headers['Expires'] = expire_time.strftime("%a, %d %b %Y %H:%M:%S GMT")
     return resp
