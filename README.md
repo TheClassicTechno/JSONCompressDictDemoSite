@@ -107,6 +107,7 @@ The browser is not decompressing or interpreting the file automatically; it just
 Compression Dictionary Transport is about the browser and server negotiating to use a cached file as a dictionary for on-the-fly compression/decompression.
 Pre-compressed files (like .zst) are always small, regardless of browser support, because the compression already happened on the server.
 
+
 ---
 
 ##  References
