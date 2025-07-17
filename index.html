@@ -1,4 +1,42 @@
+<!-- index.html -->
 <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Compression Dictionary Transport Demo</title>
+</head>
+<body>
+  <h1>Compression Dictionary Transport Demo</h1>
+  <pre id="output"></pre>
+  <script>
+    // Step 1: Fetch and cache base.json
+    fetch('/base.json', {cache: "reload"})
+      .then(response => {
+        if (!response.ok) throw new Error("Failed to fetch base.json");
+        return response.json();
+      })
+      .then(baseData => {
+        document.getElementById('output').textContent = "base.json loaded and cached.\n";
+        // Step 2: Now fetch delta.json (CDT will use the cached base.json as dictionary)
+        return fetch('/delta.json');
+      })
+      .then(response => {
+        if (!response.ok) throw new Error("Failed to fetch delta.json");
+        return response.json();
+      })
+      .then(deltaData => {
+        document.getElementById('output').textContent += "delta.json loaded!\n";
+        // Optionally, display the delta data
+        document.getElementById('output').textContent += JSON.stringify(deltaData, null, 2);
+      })
+      .catch(err => {
+        document.getElementById('output').textContent += "Error: " + err;
+      });
+  </script>
+  
+</body>
+</html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
@@ -100,4 +138,4 @@
   });
     </script>
 </body>
-</html> -->
+</html> --> 
