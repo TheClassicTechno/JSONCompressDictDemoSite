@@ -1,119 +1,99 @@
 # JSONCompressDictDemoSite
 
-This project demonstrates **dictionary-based compression** for JSON transport using Zstandard (zstd) or Brotli, with a shared dictionary (`base.json`) to efficiently compress a delta file (`delta.json`). The demo runs locally and lets you observe the dramatic reduction in delta size via your browser's DevTools.
+This project demonstrates **Compression Dictionary Transport (CDT)** for JSON in the browser, using Chrome Canary’s experimental support.  
+Unlike pre-compressed `.zst` or `.br` files, this demo lets the browser negotiate and apply dictionary-based compression on-the-fly, using a previously cached `base.json` as the dictionary for `delta.json`.  
+You can observe the dramatic reduction in network transfer size for `delta.json` in Chrome Canary DevTools.
 
 ---
 
-##  How to Run the Demo
+## 🚀 How to Run the Demo
 
 1. **Install dependencies**
     ```sh
     pip install -r requirements.txt
     ```
 
-2. **Start the server**
+2. **Generate large JSON files for the demo**
     ```sh
-    python server.py
+    python createjson.py
+    ```
+    This will create a large `base.json` and a similar `delta.json` (with a few changes).
+
+3. **Start the server with HTTP/2 and HTTPS (required for CDT)**
+    - Generate a self-signed certificate (if you don't have one):
+      ```sh
+      openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes -subj "/CN=localhost"
+      ```
+    - Start the server with Hypercorn:
+      ```sh
+      hypercorn serverCDT:app --bind 0.0.0.0:5001 --certfile cert.pem --keyfile key.pem
+      ```
+
+4. **Launch Chrome Canary with CDT enabled**
+    ```sh
+    /Applications/Google\ Chrome\ Canary.app/Contents/MacOS/Google\ Chrome\ Canary --enable-features=CompressionDictionaryTransport
     ```
 
-3. **(Optional) Install Zstandard or Brotli CLI for compression**
-    - For Zstandard:
-      ```sh
-      brew install zstd
-      ```
-    - For Brotli:
-      ```sh
-      brew install brotli
-      ```
+---
+
+## 🧪 Testing Compression Dictionary Transport
+
+1. **Visit** [https://localhost:5001](https://localhost:5001) in Chrome Canary.
+2. **Open DevTools → Network tab.**
+3. **Hard reload** the page (right-click the reload button → "Empty Cache and Hard Reload").
+4. **Observe:**
+    - `base.json` is loaded and cached (large, e.g., several MB).
+    - `delta.json` is requested after `base.json`.
+    - In the **"Transferred"** column, `delta.json` should show a **very small transfer size** (e.g., a few KB or less), even though its uncompressed size is large.
+    - The **"Size"** column will show the full uncompressed size after decompression.
+
+**This demonstrates true browser-based dictionary compression, not just pre-compressed file serving!**
 
 ---
 
-##  Testing Compression Efficiency
-
-1. **Download Chrome Canary** (for experimental dictionary support).
-2. **Visit** [http://localhost:5000](http://localhost:5000).
-3. **Open DevTools → Network tab.**
-4. **Refresh the page and inspect:**
-    - `base.json` should be ~4–5 KB (or larger for real data).
-    - `delta.json.zst` (or `delta.json.br`) should be **much smaller** (e.g., <1 KB) if dictionary compression is working.
-    - `delta.json` (uncompressed) will be similar in size to `base.json`.
-
-**This demonstrates how dictionary-based compression can drastically reduce update payloads.**
-
----
-
-##  How Dictionary Compression Works Here
+## 🗜️ How Dictionary Compression Works Here
 
 - **base.json**: The full reference dataset, sent once and cached by the browser.
-- **delta.json**: The updated data (usually very similar to base.json).
-- **delta.json.zst**: The delta, compressed using `base.json` as a dictionary.
-- The server sets the `Use-As-Dictionary` header to instruct the browser/client to use `base.json` for decompression.
+- **delta.json**: The updated data (very similar to `base.json`).
+- The server sets the `Use-As-Dictionary` header on `delta.json`:
+  ```
+  Use-As-Dictionary: match="/base.json"
+  ```
+- Chrome Canary, if CDT is enabled and all requirements are met, will use the cached `base.json` as a dictionary to decompress `delta.json` on-the-fly.
 
 ---
 
-##  Compressing delta.json with a Dictionary
-
-### Using Zstandard (zstd):
-
-```sh
-zstd --compress --ultra -22 --dict=base.json delta.json -o delta.json.zst
-```
-
-### Using Brotli (if supported):
-
-```sh
-brotli --input=delta.json --output=delta.json.br --quality=11 --mode=text --dictionary=base.json
-```
-
-- The resulting `.zst` or `.br` file will be **much smaller** if `delta.json` is similar to `base.json`.
-
----
-
-## Project Structure
+## 📄 Project Structure
 
 ```
 .
-├── base.json           # The shared dictionary file
-├── delta.json          # The delta file (uncompressed)
-├── delta.json.zst      # The delta file, compressed with zstd and base.json as dictionary
-├── index.html          # Demo web page
-├── server.py           # Flask server to serve files and headers
+├── base.json           # The shared dictionary file (large)
+├── delta.json          # The delta file (large, but similar to base.json)
+├── createjson.py       # Script to generate large JSON files
+├── index.html          # Demo web page (fetches both JSON files)
+├── serverCDT.py        # Flask server with correct CDT headers
 ├── requirements.txt    # Python dependencies
 └── README.md           # This file
 ```
 
 ---
 
-##  How the Demo Works
+## ⚠️ Notes
 
-- The web page fetches `base.json` and `delta.json.zst`.
-- You can inspect file sizes in the Network tab.
-- The server sets appropriate cache headers and the `Use-As-Dictionary` header for dictionary transport.
-- For full benefit, use a browser with experimental dictionary compression support (e.g., Chrome Canary).
-
----
-
-##  Notes
-
-- **Dictionary compression is most effective when `delta.json` is very similar to `base.json`.**
-- If you want even smaller updates, consider sending only a JSON diff/patch instead of a full delta file.
-- The demo uses Zstandard (`.zst`) by default, but you can adapt it for Brotli if your toolchain and browser support it.
-
-My JSON Demo Shows Small zst Files on all browsers.
-We are serving delta.json.zst as a pre-compressed file.
-The .zst file is already compressed on the server using the dictionary (base.json).
-Browsers just download the .zst file as-is—they do not need to support Compression Dictionary Transport to see the small file size in the network tab.
-The browser is not decompressing or interpreting the file automatically; it just shows the file size as it is served.
-Compression Dictionary Transport is about the browser and server negotiating to use a cached file as a dictionary for on-the-fly compression/decompression.
-Pre-compressed files (like .zst) are always small, regardless of browser support, because the compression already happened on the server.
-
+- **No pre-compressed (.zst/.br) files are used or served.**
+- **Compression is negotiated and applied by the browser (Chrome Canary) using CDT.**
+- **You must use HTTPS and HTTP/2 (Hypercorn with SSL) for CDT to work.**
+- **This demo only works as intended in Chrome Canary with the CDT flag enabled.**
+- **Other browsers will simply download the full `delta.json` file.**
 
 ---
 
-##  References
+## 📝 References
 
-- [Zstandard Dictionary Compression](https://facebook.github.io/zstd/)
-- [Brotli Compression](https://github.com/google/brotli)
-- [Chrome Dictionary Compression Proposal](https://github.com/WICG/compression-dictionary-transport)
+- [Compression Dictionary Transport (WICG proposal)](https://github.com/WICG/compression-dictionary-transport)
+- [Chrome CDT explainer](https://github.com/WICG/compression-dictionary-transport/blob/main/explainer.md)
+- [Hypercorn (HTTP/2 Python server)](https://pgjones.gitlab.io/hypercorn/)
 
 ---
+
+**Enjoy experimenting with true browser-based dictionary compression!**
