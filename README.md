@@ -6,7 +6,7 @@ You can observe the dramatic reduction in network transfer size for `delta.json`
 
 ---
 
-## 🚀 How to Run the Demo
+## How to Run the Demo
 
 1. **Install dependencies**
     ```sh
@@ -36,7 +36,7 @@ You can observe the dramatic reduction in network transfer size for `delta.json`
 
 ---
 
-## 🧪 Testing Compression Dictionary Transport
+##  Testing Compression Dictionary Transport
 
 1. **Visit** [https://localhost:5001](https://localhost:5001) in Chrome Canary.
 2. **Open DevTools → Network tab.**
@@ -51,7 +51,7 @@ You can observe the dramatic reduction in network transfer size for `delta.json`
 
 ---
 
-## 🗜️ How Dictionary Compression Works Here
+##  How Dictionary Compression Works Here
 
 - **base.json**: The full reference dataset, sent once and cached by the browser.
 - **delta.json**: The updated data (very similar to `base.json`).
@@ -63,7 +63,7 @@ You can observe the dramatic reduction in network transfer size for `delta.json`
 
 ---
 
-## 📄 Project Structure
+##  Project Structure
 
 ```
 .
@@ -78,7 +78,7 @@ You can observe the dramatic reduction in network transfer size for `delta.json`
 
 ---
 
-## ⚠️ Notes
+## ⚠ Notes
 
 - **No pre-compressed (.zst/.br) files are used or served.**
 - **Compression is negotiated and applied by the browser (Chrome Canary) using CDT.**
@@ -93,7 +93,3 @@ You can observe the dramatic reduction in network transfer size for `delta.json`
 - [Compression Dictionary Transport (WICG proposal)](https://github.com/WICG/compression-dictionary-transport)
 - [Chrome CDT explainer](https://github.com/WICG/compression-dictionary-transport/blob/main/explainer.md)
 - [Hypercorn (HTTP/2 Python server)](https://pgjones.gitlab.io/hypercorn/)
-
----
-
-**Enjoy experimenting with true browser-based dictionary compression!**
