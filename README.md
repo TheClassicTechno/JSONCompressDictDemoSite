@@ -4,7 +4,7 @@ This project demonstrates **dictionary-based compression** for JSON transport us
 
 ---
 
-## 🚀 How to Run the Demo
+##  How to Run the Demo
 
 1. **Install dependencies**
     ```sh
@@ -28,7 +28,7 @@ This project demonstrates **dictionary-based compression** for JSON transport us
 
 ---
 
-## 🧪 Testing Compression Efficiency
+##  Testing Compression Efficiency
 
 1. **Download Chrome Canary** (for experimental dictionary support).
 2. **Visit** [http://localhost:5000](http://localhost:5000).
@@ -42,7 +42,7 @@ This project demonstrates **dictionary-based compression** for JSON transport us
 
 ---
 
-## 🗜️ How Dictionary Compression Works Here
+##  How Dictionary Compression Works Here
 
 - **base.json**: The full reference dataset, sent once and cached by the browser.
 - **delta.json**: The updated data (usually very similar to base.json).
@@ -51,7 +51,7 @@ This project demonstrates **dictionary-based compression** for JSON transport us
 
 ---
 
-## 🛠️ Compressing delta.json with a Dictionary
+##  Compressing delta.json with a Dictionary
 
 ### Using Zstandard (zstd):
 
@@ -69,7 +69,7 @@ brotli --input=delta.json --output=delta.json.br --quality=11 --mode=text --dict
 
 ---
 
-## 🖥️ Project Structure
+## Project Structure
 
 ```
 .
@@ -84,7 +84,7 @@ brotli --input=delta.json --output=delta.json.br --quality=11 --mode=text --dict
 
 ---
 
-## 🌐 How the Demo Works
+##  How the Demo Works
 
 - The web page fetches `base.json` and `delta.json.zst`.
 - You can inspect file sizes in the Network tab.
@@ -93,20 +93,27 @@ brotli --input=delta.json --output=delta.json.br --quality=11 --mode=text --dict
 
 ---
 
-## 📝 Notes
+##  Notes
 
 - **Dictionary compression is most effective when `delta.json` is very similar to `base.json`.**
 - If you want even smaller updates, consider sending only a JSON diff/patch instead of a full delta file.
 - The demo uses Zstandard (`.zst`) by default, but you can adapt it for Brotli if your toolchain and browser support it.
 
+My JSON Demo Shows Small zst Files on all browsers.
+We are serving delta.json.zst as a pre-compressed file.
+The .zst file is already compressed on the server using the dictionary (base.json).
+Browsers just download the .zst file as-is—they do not need to support Compression Dictionary Transport to see the small file size in the network tab.
+The browser is not decompressing or interpreting the file automatically; it just shows the file size as it is served.
+Compression Dictionary Transport is about the browser and server negotiating to use a cached file as a dictionary for on-the-fly compression/decompression.
+Pre-compressed files (like .zst) are always small, regardless of browser support, because the compression already happened on the server.
+
+
 ---
 
-## 📚 References
+##  References
 
 - [Zstandard Dictionary Compression](https://facebook.github.io/zstd/)
 - [Brotli Compression](https://github.com/google/brotli)
 - [Chrome Dictionary Compression Proposal](https://github.com/WICG/compression-dictionary-transport)
 
 ---
-
-**Enjoy experimenting with efficient
