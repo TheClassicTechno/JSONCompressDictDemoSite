@@ -78,7 +78,7 @@ You can observe the dramatic reduction in network transfer size for `delta.json`
 
 ---
 
-## ⚠ Notes
+##  Notes
 
 - **No pre-compressed (.zst/.br) files are used or served.**
 - **Compression is negotiated and applied by the browser (Chrome Canary) using CDT.**
@@ -88,7 +88,7 @@ You can observe the dramatic reduction in network transfer size for `delta.json`
 
 ---
 
-## 📝 References
+##  References
 
 - [Compression Dictionary Transport (WICG proposal)](https://github.com/WICG/compression-dictionary-transport)
 - [Chrome CDT explainer](https://github.com/WICG/compression-dictionary-transport/blob/main/explainer.md)
